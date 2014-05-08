@@ -3,14 +3,21 @@ package uk.ac.york.minesweeper;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
 /**
  * Static class containing the game's images
  */
-public final class Images
-{
+public final class Images {
+
+    private static final Logger LOG = Logger.getLogger(Images.class.getName());
+
+    private static final ConsoleHandler HANDLER = new ConsoleHandler();
+
     /** Resources directory (beginning and ending with forward slash) */
     private static final String RES_DIRECTORY = "/res/";
 
@@ -37,9 +44,14 @@ public final class Images
      */
     private static BufferedImage loadImageResource(String name)
     {
-        // Load image stream
+
+
         try (InputStream imgStream = Images.class.getResourceAsStream(RES_DIRECTORY + name))
         {
+            LOG.addHandler(HANDLER);
+            LOG.setLevel(Level.ALL);
+            LOG.log(Level.ALL, "logging ALL");
+            LOG.fine("Lollllll");;
             // Decompress image
             return ImageIO.read(imgStream);
         }

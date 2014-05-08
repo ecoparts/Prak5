@@ -2,12 +2,18 @@ package uk.ac.york.minesweeper;
 
 import java.util.Arrays;
 import java.util.Random;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Logger;
 
 /**
  * Class containing the game data for the minesweeper game
  */
-public class Minefield
-{
+public class Minefield {
+
+    private static final Logger LOG = Logger.getLogger(Minefield.class.getName());
+
+    private static final ConsoleHandler HANDLER = new ConsoleHandler();
+
     // Array containing tile values (-1 = mine)
     private final byte[][] valuesArray;
 
@@ -37,6 +43,7 @@ public class Minefield
      */
     public Minefield(int width, int height, int mines)
     {
+
         int tilesLeft = (width * height) - mines;
 
         // Validate arguments

@@ -11,6 +11,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 import javax.swing.SwingUtilities;
@@ -18,8 +19,10 @@ import javax.swing.SwingUtilities;
 /**
  * A component which can display a minefield graphically and handle various events
  */
-public class MinefieldPanel extends JComponent
-{
+public class MinefieldPanel extends JComponent {
+
+    private static final Logger log = Logger.getLogger(MinefieldPanel.class.getName());
+
     private static final long serialVersionUID = 1L;
 
     /** Size of all the tiles */

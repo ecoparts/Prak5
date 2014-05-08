@@ -7,6 +7,9 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -17,12 +20,14 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
-public class MinesweeperFrame extends JFrame implements ActionListener
-{
+public class MinesweeperFrame extends JFrame implements ActionListener {
+
+    private static final Logger log = Logger.getLogger(MinesweeperFrame.class.getName());
+
     private static final long serialVersionUID = 1L;
 
     // Constants
-    private static final String[] DIFFICULTIES = { "Easy", "Medium", "Hard" };
+    private static final String[] DIFFICULTIES = {"Easy", "Medium", "Hard"};
 
     private static final String INCREMENT = "incr";
     private static final String RESET = "reset";
@@ -44,7 +49,7 @@ public class MinesweeperFrame extends JFrame implements ActionListener
     {
         // Basic Interface Settings
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-        this.setLayout(new BorderLayout(0,0));
+        this.setLayout(new BorderLayout(0, 0));
         this.getContentPane().setBackground(Color.white);
         this.setSize(new Dimension(400, 500));
         this.setMinimumSize(new Dimension(400, 500));
@@ -126,8 +131,7 @@ public class MinesweeperFrame extends JFrame implements ActionListener
         {
             time++;
         }
-        else if(event.getActionCommand().equals(RESET))
-        {
+        else if (event.getActionCommand().equals(RESET)) {
             // Reset timer
             scoreTimer.stop();
             time = 0;
@@ -154,6 +158,16 @@ public class MinesweeperFrame extends JFrame implements ActionListener
 
     public static void main(String[] args)
     {
+
+        final Logger logger = Logger.getLogger(Minefield.class.getName());
+
+        final ConsoleHandler handler = new ConsoleHandler();
+
+        logger.addHandler(handler);
+        logger.setLevel(Level.FINEST);
+        logger.log(Level.FINE, "logging ALL");
+        logger.fine("Alles ist fein!");;
+
         SwingUtilities.invokeLater(new Runnable()
         {
             @Override
@@ -163,4 +177,6 @@ public class MinesweeperFrame extends JFrame implements ActionListener
             }
         });
     }
+
+
 }
