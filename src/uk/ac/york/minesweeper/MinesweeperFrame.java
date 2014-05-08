@@ -163,20 +163,32 @@ public class MinesweeperFrame extends JFrame implements ActionListener {
 
         final ConsoleHandler handler = new ConsoleHandler();
 
+        handler.setFormatter(new OwnFormatter());
         logger.addHandler(handler);
+
+        logger.info("LOG Gestartet!");
+
         logger.setLevel(Level.FINEST);
         logger.log(Level.FINE, "logging ALL");
         logger.fine("Alles ist fein!");;
+        logger.warning("Kleines Problem!");
+
+
 
         SwingUtilities.invokeLater(new Runnable()
         {
             @Override
             public void run()
             {
+
+
+
                 new MinesweeperFrame().setVisible(true);
+
+
             }
         });
+
+        logger.info("LOGGING BEENDET!");
     }
-
-
 }
