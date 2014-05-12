@@ -24,14 +24,11 @@ import javax.swing.Timer;
 /**
  *
  * @author Niklas
- * Stellt das Fenster da.
+ * Stellt das Fenster dar.
  *
  */
 public class MinesweeperFrame extends JFrame implements ActionListener {
 
-    /**
-     * Logger.
-     */
     private static final Logger
     LOGGER = Logger.getLogger(MinesweeperFrame.class.getName());
 
@@ -101,80 +98,55 @@ public class MinesweeperFrame extends JFrame implements ActionListener {
         this.setSize(new Dimension(400, 500));
         this.setMinimumSize(new Dimension(400, 500));
         this.setTitle("Minesweeper");
-
-        // Interface Structure
         JPanel topPanel = new JPanel(new GridLayout(1, 3, 10, 10));
         topPanel.setBackground(Color.white);
-
         JPanel centerPanel = new JPanel(
                 new FlowLayout(FlowLayout.CENTER, 10, 10));
         centerPanel.setBackground(Color.white);
-
         JPanel centerMidPanel = new JPanel(
                 new FlowLayout(FlowLayout.CENTER, 10, 10));
-
         minePanel = new MinefieldPanel(new Minefield(16, 16, 40));
         minePanel.addStateChangeListener(new MinefieldStateChangeListener()
         {
             @Override
             public void stateChanged(final MinefieldStateChangeEvent event) {
                 Minefield minefield = minePanel.getMinefield();
-
                 if (minefield.isFinished()) {
-                    // Stop timer and set icon
                     scoreTimer.stop();
-
                     CH.setFormatter(new OwnFormatter());
-
                     LOGGER.addHandler(CH);
-
                     LOGGER.severe("MINE Getroffen.");
-
                     if (minefield.getGameState() == GameState.WON) {
-                        topResetBtn.setIcon(new ImageIcon(Images.FACE_WON));
+                        topResetBtn.setIcon(new ImageIcon(Images.getFaceWon()));
                     } else {
-                        topResetBtn.setIcon(new ImageIcon(Images.FACE_LOST));
+                    topResetBtn.setIcon(new ImageIcon(Images.getFaceLost()));
                     }
 
                 } else {
-                    // Set normal face and start timer if we've just started
-                    topResetBtn.setIcon(new ImageIcon(Images.FACE_NORMAL));
-
+                    topResetBtn.setIcon(new ImageIcon(Images.getFaceNormal()));
                     if (minefield.getGameState() == GameState.RUNNING) {
                             scoreTimer.start();
                     }
-
                 }
-
                 topResetBtn.repaint();
             }
         });
-
         centerMidPanel.add(minePanel);
-
         // Difficulty Chooser
         difficultyBox.setSelectedIndex(1);
-
-        // Reset Button
         topResetBtn = new JButton();
         topResetBtn.setPreferredSize(new Dimension(50, 50));
         topResetBtn.setActionCommand(RESET);
         topResetBtn.addActionListener(this);
         centerPanel.add(topResetBtn);
-
-        topResetBtn.setIcon(new ImageIcon(Images.FACE_NORMAL));
-
-        // Labels
+        topResetBtn.setIcon(new ImageIcon(Images.getFaceNormal()));
         topTimer = new JLabel(String.valueOf(time) + " Seconds");
         scoreTimer.setActionCommand(INCREMENT);
-
-        // Adding Items to Grid
         topPanel.add(difficultyBox);
         topPanel.add(centerPanel);
         topPanel.add(topTimer);
         mainPanel.add(topPanel, BorderLayout.NORTH);
         mainPanel.add(centerMidPanel, BorderLayout.CENTER);
-
         this.getContentPane().add(mainPanel, BorderLayout.NORTH);
         this.pack();
     }

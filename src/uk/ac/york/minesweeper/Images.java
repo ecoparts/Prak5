@@ -28,21 +28,44 @@ public final class Images {
     private static final String RES_DIRECTORY = "/res/";
 
     /** Image of a sea mine. */
-    public static final BufferedImage MINE = loadImageResource("mine.png");
+    private static final BufferedImage MINE = loadImageResource("mine.png");
 
     /** Image of a generic flag. */
-    public static final BufferedImage FLAG = loadImageResource("flag.png");
+    private static final BufferedImage FLAG = loadImageResource("flag.png");
 
     /** Image of a normal face. */
-    public static final BufferedImage
+    private static final BufferedImage
     FACE_NORMAL = loadImageResource("default.png");
 
     /** Image of a face when you win. */
-    public static final BufferedImage FACE_WON = loadImageResource("won.png");
+    private static final BufferedImage FACE_WON = loadImageResource("won.png");
 
     /** Image of a face when you lose. */
-    public static final BufferedImage FACE_LOST = loadImageResource("lost.png");
+   private static final BufferedImage FACE_LOST = loadImageResource("lost.png");
 
+    private Images() {
+
+    }
+
+    public static BufferedImage getMine() {
+        return MINE;
+    }
+
+    public static BufferedImage getFlag() {
+        return FLAG;
+    }
+
+    public static BufferedImage getFaceNormal() {
+        return FACE_NORMAL;
+    }
+
+    public static BufferedImage getFaceWon() {
+        return FACE_WON;
+    }
+
+    public static BufferedImage getFaceLost() {
+        return FACE_LOST;
+    }
     /**
      * Loads an image from the resources directory.
      *
@@ -68,9 +91,4 @@ public final class Images {
         }
     }
 
-    /**
-     * Images.
-     */
-    private Images() {
-    }
 }

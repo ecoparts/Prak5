@@ -5,9 +5,9 @@ import java.util.Random;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
 
-/**
- * Class containing the game data for the minesweeper game.
- */
+    /**
+     * Class containing the game data for the minesweeper game.
+     */
 public class Minefield {
 
     /**
@@ -18,14 +18,55 @@ public class Minefield {
 
     /**
      * Handler.
-     */
+         */
     private static final ConsoleHandler HANDLER = new ConsoleHandler();
+
+    /** Tile processor for initValues which
+    * increments a tile's value if it is not a mine. */
+        private final SurroundingTilesProcessor
+        PROCESSOR_INIT_VALUES = new SurroundingTilesProcessor() {
+            @Override
+            public void process(final int x, final int y) {
+                // Increment values which are not mines
+                if (valuesArray[x][y] >= 0) {
+
+                    valuesArray[x][y]++;
+                }
+
+            }
+        };
+
+    /** Tile processor for chord which uncovers a tile if it is not flagged. */
+    private final SurroundingTilesProcessor
+    PROCESSOR_CHORD = new SurroundingTilesProcessor()
+    {
+        @Override
+        public void process(final int x, final int y) {
+            // Uncover non-flagged tiles
+            if (stateArray[x][y] != TileState.FLAGGED) {
+
+                uncoverNoChecks(x, y);
+            }
+
+        }
+    };
+
+    /** Tile processor for uncoverNoChecks which uncovers a tile immediately. */
+    private final SurroundingTilesProcessor
+    PROCESSOR_UNCOVER = new SurroundingTilesProcessor()
+    {
+        @Override
+        public final void process(final int x, final int y) {
+            uncoverNoChecks(x, y);
+        }
+    };
 
     /**
      * Array für die Werte.
      */
     // Array containing tile values (-1 = mine)
     private final byte[][] valuesArray;
+
 
     /**
      * Array für die Zustände.
@@ -68,39 +109,39 @@ public class Minefield {
      *
      * @param width width of the minefield in tiles
      * @param height height of the minefield in tiles
-     * @param mines number of mines
+     * @param minen number of mines
      */
-    public Minefield(final int width, final int height, final int mines) {
+    public Minefield(final int width, final int height, final int minen) {
 
-        int tilesLeft = (width * height) - mines;
+        int tilesLinks = (width * height) - minen;
 
         // Validate arguments
-        if (width < 1 || height < 1 || mines < 0) {
+        if (width < 1 || height < 1 || minen < 0) {
 
             throw new IllegalArgumentException("invalid minefield dimensions");
         }
 
 
-        if (tilesLeft <= 0) {
+        if (tilesLinks <= 0) {
 
             throw new IllegalArgumentException("too many mines");
         }
 
 
         // Save initial properties
-        this.mines = mines;
-        this.tilesLeft = tilesLeft;
+        this.mines = minen;
+        this.tilesLeft = tilesLinks;
 
         // Create arrays (empty + covered)
-        TileState[][] stateArray = new TileState[width][height];
+        TileState[][] zustandsArray = new TileState[width][height];
 
         for (int x = 0; x < width; x++) {
 
-            Arrays.fill(stateArray[x], TileState.COVERED);
+            Arrays.fill(zustandsArray[x], TileState.COVERED);
 
         }
 
-        this.stateArray = stateArray;
+        this.stateArray = zustandsArray;
         this.valuesArray = new byte[width][height];
     }
 
@@ -145,10 +186,10 @@ public class Minefield {
      * Sets a value determining whether
      * mines are uncovered at the end of the game.
      *
-     * @param uncoverMinesAtEnd true if mines are uncovered at the end
+     * @param uncoverMinesatEnd true if mines are uncovered at the end
      */
-    public final void setUncoverMinesAtEnd(final boolean uncoverMinesAtEnd) {
-        this.uncoverMinesAtEnd = uncoverMinesAtEnd;
+    public final void setUncoverMinesAtEnd(final boolean uncoverMinesatEnd) {
+        this.uncoverMinesAtEnd = uncoverMinesatEnd;
     }
 
     /**
@@ -249,16 +290,15 @@ public class Minefield {
                         + " not a valid tile state");
         }
     }
-
-    /**
-     * Uncovers the tile at the given location.
-     *
-     * This method is equivalent
-     *  to calling {@code setTileState(x, y, TileState.UNCOVERED)}
-     *
-     * @param x x position of tile
-     * @param y y position of tile
-     */
+/**
+* Uncovers the tile at the given location.
+*
+* This method is equivalent
+* to calling {@code setTileState(x, y, TileState.UNCOVERED)}
+*
+* @param x x position of tile
+* @param y y position of tile
+*/
     public final void uncover(final int x, final int y) {
         if (isFinished()) {
 
@@ -276,23 +316,13 @@ public class Minefield {
         uncoverNoChecks(x, y);
     }
 
-    /** Tile processor for uncoverNoChecks which uncovers a tile immediately. */
-    private final SurroundingTilesProcessor
-        PROCESSOR_UNCOVER = new SurroundingTilesProcessor()
-    {
-        @Override
-        public final void process(final int x, final int y) {
-            uncoverNoChecks(x, y);
-        }
-    };
-
     /**
-     * Uncovers the given tile and
-     * surrounding tiles without performing state checks.
-     *
-     * @param x x position of tile
-     * @param y y position of tile
-     */
+* Uncovers the given tile and
+* surrounding tiles without performing state checks.
+*
+* @param x x position of tile
+* @param y y position of tile
+*/
     private void uncoverNoChecks(final int x, final int y) {
         int width = getWidth();
         int height = getHeight();
@@ -324,20 +354,20 @@ public class Minefield {
             uncoverAllMines();
             } else if (tilesLeft <= 0 && gameState == GameState.RUNNING) {
             // Uncovered all the non-mines!
-            //  The gameState check is required for
+            // The gameState check is required for
             //chording since you may hit a mine and then win.
-            //  later on the same move (which we don't want to overwrite)
+            // later on the same move (which we don't want to overwrite)
             gameState = GameState.WON;
             uncoverAllMines();
         }
     }
 
     /**
-     * Uncovers all mines if uncoverMinesAtEnd is set
-     *
-     * This does not uncover correctly flagged mines, but sets incorrectly
-     * flagged mines to questions.
-     */
+* Uncovers all mines if uncoverMinesAtEnd is set
+*
+* This does not uncover correctly flagged mines, but sets incorrectly
+* flagged mines to questions.
+*/
     private void uncoverAllMines() {
         if (uncoverMinesAtEnd) {
             int width = getWidth();
@@ -365,36 +395,20 @@ public class Minefield {
             }
         }
     }
-
-    /** Tile processor for chord which uncovers a tile if it is not flagged. */
-    private final SurroundingTilesProcessor
-    PROCESSOR_CHORD = new SurroundingTilesProcessor()
-    {
-        @Override
-        public void process(final int x, final int y) {
-            // Uncover non-flagged tiles
-            if (stateArray[x][y] != TileState.FLAGGED) {
-
-                uncoverNoChecks(x, y);
-            }
-
-        }
-    };
-
     /**
-     * Attempts to chord using the given central position
-     *
-     * Chording causes all the
-     * surrounding tiles to be uncovered if the number of.
-     * surrounding flags is equal to the value on the central tile.
-     *
-     * This method does nothing if the
-     * central tile is still covered of the number of
-     * surrounding flags in incorrect.
-     *
-     * @param x x position of central tile
-     * @param y y position of central tile
-     */
+* Attempts to chord using the given central position
+*
+* Chording causes all the
+* surrounding tiles to be uncovered if the number of.
+* surrounding flags is equal to the value on the central tile.
+*
+* This method does nothing if the
+* central tile is still covered of the number of
+* surrounding flags in incorrect.
+*
+* @param x x position of central tile
+* @param y y position of central tile
+*/
     public final void chord(final int x, final int y) {
         if (isFinished()) {
 
@@ -415,31 +429,15 @@ public class Minefield {
             processSurrounding(x, y, PROCESSOR_CHORD);
         }
     }
-
-    /** Tile processor for initValues which
-     *  increments a tile's value if it is not a mine. */
-    private final SurroundingTilesProcessor
-    PROCESSOR_INIT_VALUES = new SurroundingTilesProcessor() {
-        @Override
-        public void process(final int x, final int y) {
-            // Increment values which are not mines
-            if (valuesArray[x][y] >= 0) {
-
-                valuesArray[x][y]++;
-            }
-
-        }
-    };
-
     /**
-     * Initializes the values grid for a new game.
-     *
-     * startX and startY are used to
-     * prevent mines from appearing at the start location
-     *
-     * @param startX x position to prevent mines for
-     * @param startY y position to prevent mines for
-     */
+* Initializes the values grid for a new game.
+*
+* startX and startY are used to
+* prevent mines from appearing at the start location
+*
+* @param startX x position to prevent mines for
+* @param startY y position to prevent mines for
+*/
     private void initValues(final int startX, final int startY) {
         int width = getWidth();
         int height = getHeight();
@@ -466,12 +464,12 @@ public class Minefield {
     }
 
     /**
-     * Counts the number of flags surrounding a position.
-     *
-     * @param x x position of central tile
-     * @param y y position of central tile
-     * @return number of surrounding flags
-     */
+* Counts the number of flags surrounding a position.
+*
+* @param x x position of central tile
+* @param y y position of central tile
+* @return number of surrounding flags
+*/
     private int countSurroundingFlags(final int x, final int y) {
         int count = 0;
         int width = getWidth();
@@ -484,7 +482,7 @@ public class Minefield {
                     count++;
                 }
             }
-            if (stateArray[x    ][y - 1] == TileState.FLAGGED) {
+            if (stateArray[x ][y - 1] == TileState.FLAGGED) {
                                     count++;
                                 }
             if (x < width - 1) {
@@ -495,13 +493,13 @@ public class Minefield {
         }
 
         if (x > 0) {
-            if (stateArray[x - 1][y    ] == TileState.FLAGGED) {
+            if (stateArray[x - 1][y ] == TileState.FLAGGED) {
                 count++;
             }
         }
         if (x < width - 1) {
 
-           if (stateArray[x + 1][y    ] == TileState.FLAGGED) {
+           if (stateArray[x + 1][y ] == TileState.FLAGGED) {
                count++;
            }
         }
@@ -512,7 +510,7 @@ public class Minefield {
                     count++;
                 }
             }
-            if (stateArray[x    ][y + 1] == TileState.FLAGGED) {
+            if (stateArray[x ][y + 1] == TileState.FLAGGED) {
                 count++;
                 }
             if (x < width - 1) {
@@ -526,11 +524,11 @@ public class Minefield {
     }
 
     /**
-     * Calls a function on all the surrounding tiles which exist.
-     *
-     * @param x x position of central tile
-     * @param y y position of central tile
-     */
+* Calls a function on all the surrounding tiles which exist.
+*
+* @param x x position of central tile
+* @param y y position of central tile
+*/
     private void processSurrounding(final int x,
             final int y, final SurroundingTilesProcessor processor) {
         int width = getWidth();
@@ -540,7 +538,7 @@ public class Minefield {
             if (x > 0) {
                 processor.process(x - 1, y - 1);
             }
-                                processor.process(x    , y - 1);
+                                processor.process(x , y - 1);
             if (x < width - 1) {
                 processor.process(x + 1, y - 1);
             }
@@ -557,7 +555,7 @@ public class Minefield {
             if (x > 0) {
                 processor.process(x - 1, y + 1);
             }
-                                processor.process(x    , y + 1);
+                                processor.process(x , y + 1);
             if (x < width - 1) {
                 processor.process(x + 1, y + 1);
             }
@@ -565,31 +563,25 @@ public class Minefield {
     }
 
     /**
-     * Gets a string representing the minefield's current visible state.
-     * @return String
-     */
+* Gets a string representing the minefield's current visible state.
+* @return String
+*/
     @Override
     public final String toString() {
         int width = getWidth();
         int height = getHeight();
-
         StringBuilder builder = new StringBuilder();
-
         // Write top line
         builder.append('+');
         for (int x = 0; x < width; x++) {
             builder.append('-');
         }
-
         builder.append("+\n");
-
         // Write each line of the minefield
         for (int y = 0; y < height; y++) {
             builder.append('|');
-
             for (int x = 0; x < width; x++) {
                 char c;
-
                 // Handle each tile state
                 switch (getTileState(x, y)) {
                     case COVERED:
@@ -637,15 +629,15 @@ public class Minefield {
     }
 
     /**
-     * Interface used for processing surrounding tiles.
-     */
+* Interface used for processing surrounding tiles.
+*/
     private interface SurroundingTilesProcessor {
         /**
-         * Processes the given tile (which is guaranteed to exist).
-         *
-         * @param x x position of tile
-         * @param y y position of tile
-         */
+* Processes the given tile (which is guaranteed to exist).
+*
+* @param x x position of tile
+* @param y y position of tile
+*/
       void process(int x, int y);
     }
 }

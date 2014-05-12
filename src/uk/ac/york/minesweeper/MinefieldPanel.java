@@ -95,12 +95,12 @@ public class MinefieldPanel extends JComponent {
      *
      * @param minefield minefield to display
      */
-    public MinefieldPanel(final Minefield minefield) {
+    public MinefieldPanel(final Minefield mineField) {
         this.addMouseListener(new MouseEventListener());
         this.setBackground(COLOUR_BACKGROUND);
         this.setOpaque(true);
         this.setFont(FONT);
-        this.setMinefield(minefield);
+        this.setMinefield(mineField);
     }
 
     /**
@@ -154,7 +154,7 @@ public class MinefieldPanel extends JComponent {
      *
      * @param newMinefield the new minefield
      */
-    public final void setMinefield(final Minefield newMinefield) {
+    public void setMinefield(Minefield newMinefield) {
         if (newMinefield == null) {
 
             throw new IllegalArgumentException("newMinefield cannot be null");
@@ -219,68 +219,55 @@ public class MinefieldPanel extends JComponent {
     @Override
     public final void paintComponent(final Graphics gOld) {
         Graphics2D g = (Graphics2D) gOld;
-
-        // Get selected tile position
-        int selectedX = (selectedTile == null ? -1 : selectedTile.x);
-        int selectedY = (selectedTile == null ? -1 : selectedTile.y);
-
-        // Make the numbers look a little nicer
+        int selectedX;
+        int selectedY;
+        if (selectedTile == null) {
+            selectedX = -1;
+        } else {
+            selectedX = selectedTile.x;
+        }
+        if (selectedTile == null) {
+            selectedY = -1;
+        } else {
+            selectedY = selectedTile.y;
+        }
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-
-        // Draw background
         if (isOpaque()) {
             g.setColor(getBackground());
             g.fillRect(0, 0, getWidth(), getHeight());
         }
-
-        // Draw all the tiles
         for (int x = 0; x < minefield.getWidth(); x++) {
             for (int y = 0; y < minefield.getHeight(); y++) {
                 int graphicsX1 = x * TILE_SIZE;
                 int graphicsY1 = y * TILE_SIZE;
-
-                // Draw standard background
                 g.setColor(COLOUR_DARK);
                 g.drawLine(graphicsX1, graphicsY1,
                         graphicsX1 + TILE_SIZE, graphicsY1);
                 g.drawLine(graphicsX1, graphicsY1,
                         graphicsX1, graphicsY1 + TILE_SIZE);
-
-                // Covered or uncovered?
                 if (minefield.getTileState(x, y) == TileState.UNCOVERED) {
-                    // Draw the correct symbol
                     int tileValue = minefield.getTileValue(x, y);
-
                     if (tileValue < 0) {
-                        drawImage(g, graphicsX1, graphicsY1, Images.MINE);
+                        drawImage(g, graphicsX1, graphicsY1, Images.getMine());
                     } else if (tileValue > 0) {
                         g.setColor(COLOUR_NUMBERS[tileValue]);
                         drawCharacter(g, graphicsX1,
                                 graphicsY1, (char) ('0' + tileValue));
                     }
                 } else {
-// Only draw the bevel background if this is NOT the selected tile
                     if (x != selectedX || y != selectedY) {
                         int bevelX2 = graphicsX1 + TILE_SIZE - BEVEL_WIDTH;
                         int bevelY2 = graphicsY1 + TILE_SIZE - BEVEL_WIDTH;
-
-                        g.setColor(COLOUR_LIGHT);
-                        g.fillRect(graphicsX1,
-                                graphicsY1, TILE_SIZE, BEVEL_WIDTH);
-                        g.fillRect(graphicsX1,
-                                graphicsY1, BEVEL_WIDTH, TILE_SIZE);
-                        g.setColor(COLOUR_DARK);
-                        g.fillRect(graphicsX1,
-                                bevelY2,    TILE_SIZE, BEVEL_WIDTH);
-                        g.fillRect(bevelX2,
-                                graphicsY1, BEVEL_WIDTH, TILE_SIZE);
-
+               g.setColor(COLOUR_LIGHT);
+               g.fillRect(graphicsX1, graphicsY1, TILE_SIZE, BEVEL_WIDTH);
+               g.fillRect(graphicsX1, graphicsY1, BEVEL_WIDTH, TILE_SIZE);
+               g.setColor(COLOUR_DARK);
+               g.fillRect(graphicsX1, bevelY2, TILE_SIZE, BEVEL_WIDTH);
+               g.fillRect(bevelX2, graphicsY1, BEVEL_WIDTH, TILE_SIZE);
                     }
-
-                    // Draw flag or question mark if needed
                     if (minefield.getTileState(x, y) == TileState.FLAGGED) {
-                        drawImage(g, graphicsX1, graphicsY1, Images.FLAG);
+                        drawImage(g, graphicsX1, graphicsY1, Images.getFlag());
                     } else if (minefield.getTileState(x, y)
                             == TileState.QUESTION) {
                         g.setColor(COLOUR_QUESTION);
@@ -360,9 +347,8 @@ public class MinefieldPanel extends JComponent {
                 switch(minefield.getTileState(tile.x, tile.y)) {
                     case COVERED:   newState = TileState.FLAGGED;   break;
                     case FLAGGED:   newState = TileState.QUESTION;  break;
-                    default:        newState = TileState.COVERED;   break;
-
                     case UNCOVERED: newState = TileState.UNCOVERED; break;
+                    default:        newState = TileState.COVERED;   break;
                 }
 
                 minefield.setTileState(tile.x, tile.y, newState);
