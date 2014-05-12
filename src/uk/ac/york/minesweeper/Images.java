@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
@@ -14,7 +13,7 @@ import javax.imageio.ImageIO;
  */
 public final class Images {
 
-    private static final Logger LOG = Logger.getLogger(Images.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Images.class.getName());
 
     private static final ConsoleHandler HANDLER = new ConsoleHandler();
 
@@ -48,12 +47,17 @@ public final class Images {
 
         try (InputStream imgStream = Images.class.getResourceAsStream(RES_DIRECTORY + name))
         {
+          /*  HANDLER.setFormatter(new OwnFormatter());
             LOG.addHandler(HANDLER);
-            LOG.setLevel(Level.ALL);
-            LOG.log(Level.ALL, "logging ALL");
-            LOG.fine("Lollllll");;
+
+            LOG.info("LOG Gestartet!");
+
+            LOG.setLevel(Level.FINEST);
+            LOG.log(Level.FINE, "logging ALL");
+
+            LOG.info("Bild geladen!"); */
             // Decompress image
-            return ImageIO.read(imgStream);
+            return ImageIO.read(imgStream) ;
         }
         catch (IOException e)
         {

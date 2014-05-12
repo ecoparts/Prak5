@@ -19,7 +19,7 @@ public class OwnFormatter extends Formatter {
         StringBuffer sb = new StringBuffer();
 
         // Date
-        sb.append("\n");
+        sb.append("\n" +"-------------------------------------------------------------------" + "\n");
         sb.append("Datum: " + dateformatter.format(date)  );
         sb.append("\n");
 
@@ -40,7 +40,7 @@ public class OwnFormatter extends Formatter {
         }
 
         // Message
-        sb.append("Message: " + record.getMessage() +"\n");
+        sb.append("Message: " + record.getMessage() +"\n" + "-------------------------------------------------------------------");
 
         // Newline
         sb.append(System.getProperty("line.separator") );

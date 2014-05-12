@@ -10,7 +10,7 @@ import java.util.logging.Logger;
  */
 public class Minefield {
 
-    private static final Logger LOG = Logger.getLogger(Minefield.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Minefield.class.getName());
 
     private static final ConsoleHandler HANDLER = new ConsoleHandler();
 

@@ -11,6 +11,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Logger;
 
 import javax.swing.JComponent;
@@ -21,7 +22,9 @@ import javax.swing.SwingUtilities;
  */
 public class MinefieldPanel extends JComponent {
 
-    private static final Logger log = Logger.getLogger(MinefieldPanel.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(MinefieldPanel.class.getName());
+
+    private static final ConsoleHandler CH = new ConsoleHandler();
 
     private static final long serialVersionUID = 1L;
 
@@ -152,6 +155,13 @@ public class MinefieldPanel extends JComponent {
 
         // Fire event
         this.fireStateChangeEvent();
+
+        CH.setFormatter(new OwnFormatter());
+
+        LOGGER.addHandler(CH);
+
+        LOGGER.info("MINENFELD initiiert.");
+
     }
 
     /**
@@ -289,13 +299,11 @@ public class MinefieldPanel extends JComponent {
     /**
      * Handles all mouse events within the game area
      */
-    private class MouseEventListener extends MouseAdapter
-    {
+    private class MouseEventListener extends MouseAdapter {
         /**
-         * Calculates the selected tile from a mouse event
+         * Calculates the selected tile from a mouse event.
          */
-        private Point getTileFromEvent(MouseEvent e)
-        {
+        private Point getTileFromEvent(MouseEvent e) {
             return new Point(e.getX() / TILE_SIZE, e.getY() / TILE_SIZE);
         }
 

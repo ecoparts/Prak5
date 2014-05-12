@@ -7,7 +7,9 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -163,6 +165,24 @@ public class MinesweeperFrame extends JFrame implements ActionListener {
 
         final ConsoleHandler handler = new ConsoleHandler();
 
+        final Logger logger2 = Logger.getLogger(Minefield.class.getName());
+
+        try {
+
+            final FileHandler fh = new FileHandler("C:/Users/Niklas/Desktop/java-minesweeper/log/loggy.html");
+
+            fh.setFormatter(new HTMLFormatter());
+
+            logger2.addHandler(fh);
+
+        } catch (SecurityException | IOException e) {
+
+            e.printStackTrace();
+
+        }
+
+
+
         handler.setFormatter(new OwnFormatter());
         logger.addHandler(handler);
 
@@ -170,10 +190,6 @@ public class MinesweeperFrame extends JFrame implements ActionListener {
 
         logger.setLevel(Level.FINEST);
         logger.log(Level.FINE, "logging ALL");
-        logger.fine("Alles ist fein!");;
-        logger.warning("Kleines Problem!");
-
-
 
         SwingUtilities.invokeLater(new Runnable()
         {
