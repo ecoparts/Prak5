@@ -21,34 +21,79 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-
+/**
+ *
+ * @author Niklas
+ * Stellt das Fenster da.
+ *
+ */
 public class MinesweeperFrame extends JFrame implements ActionListener {
 
-    private static final Logger log = Logger.getLogger(MinesweeperFrame.class.getName());
+    /**
+     * Logger.
+     */
+    private static final Logger
+    LOGGER = Logger.getLogger(MinesweeperFrame.class.getName());
 
+    /**
+     * Handler.
+     */
+    private static final ConsoleHandler CH = new ConsoleHandler();
+
+    /**
+     * Version.
+     */
     private static final long serialVersionUID = 1L;
 
-    // Constants
+    /**
+     * Konstanten.
+     */
     private static final String[] DIFFICULTIES = {"Easy", "Medium", "Hard"};
-
+    /**
+     * Konstanten.
+     */
     private static final String INCREMENT = "incr";
+    /**
+     * Konstanten.
+     */
     private static final String RESET = "reset";
 
-    // Interface
+    /**
+     * Interface.
+     */
     private JPanel mainPanel =  new JPanel(new BorderLayout(10, 10));
-    private JComboBox<String> difficultyBox = new JComboBox<String>(DIFFICULTIES);
+    /**
+     * Interface.
+     */
+    private JComboBox<String>
+    difficultyBox = new JComboBox<String>(DIFFICULTIES);
+    /**
+     * Interface.
+     */
     private MinefieldPanel minePanel;
 
-    // Timer
+    /**
+     * Timer.
+     */
     private Timer scoreTimer = new Timer(1000, this);
+    /**
+     * Label TopTimer.
+     */
     private JLabel topTimer;
+    /**
+     * Zeit.
+     */
     private int time = 0;
 
-    // Button Images
+    /**
+     * Button.
+     */
     private JButton topResetBtn;
 
-    public MinesweeperFrame()
-    {
+    /**
+     * Konstruktor für das Frame.
+     */
+    public MinesweeperFrame() {
         // Basic Interface Settings
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLayout(new BorderLayout(0, 0));
@@ -61,36 +106,44 @@ public class MinesweeperFrame extends JFrame implements ActionListener {
         JPanel topPanel = new JPanel(new GridLayout(1, 3, 10, 10));
         topPanel.setBackground(Color.white);
 
-        JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        JPanel centerPanel = new JPanel(
+                new FlowLayout(FlowLayout.CENTER, 10, 10));
         centerPanel.setBackground(Color.white);
 
-        JPanel centerMidPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        JPanel centerMidPanel = new JPanel(
+                new FlowLayout(FlowLayout.CENTER, 10, 10));
 
         minePanel = new MinefieldPanel(new Minefield(16, 16, 40));
         minePanel.addStateChangeListener(new MinefieldStateChangeListener()
         {
             @Override
-            public void stateChanged(MinefieldStateChangeEvent event)
-            {
+            public void stateChanged(final MinefieldStateChangeEvent event) {
                 Minefield minefield = minePanel.getMinefield();
 
-                if (minefield.isFinished())
-                {
+                if (minefield.isFinished()) {
                     // Stop timer and set icon
                     scoreTimer.stop();
 
-                    if (minefield.getGameState() == GameState.WON)
+                    CH.setFormatter(new OwnFormatter());
+
+                    LOGGER.addHandler(CH);
+
+                    LOGGER.severe("MINE Getroffen.");
+
+                    if (minefield.getGameState() == GameState.WON) {
                         topResetBtn.setIcon(new ImageIcon(Images.FACE_WON));
-                    else
+                    } else {
                         topResetBtn.setIcon(new ImageIcon(Images.FACE_LOST));
-                }
-                else
-                {
+                    }
+
+                } else {
                     // Set normal face and start timer if we've just started
                     topResetBtn.setIcon(new ImageIcon(Images.FACE_NORMAL));
 
-                    if (minefield.getGameState() == GameState.RUNNING)
-                        scoreTimer.start();
+                    if (minefield.getGameState() == GameState.RUNNING) {
+                            scoreTimer.start();
+                    }
+
                 }
 
                 topResetBtn.repaint();
@@ -127,28 +180,21 @@ public class MinesweeperFrame extends JFrame implements ActionListener {
     }
 
     @Override
-    public void actionPerformed(ActionEvent event)
-    {
-        if(event.getActionCommand().equals(INCREMENT))
-        {
+    public final void actionPerformed(final ActionEvent event) {
+        if (event.getActionCommand().equals(INCREMENT)) {
             time++;
-        }
-        else if (event.getActionCommand().equals(RESET)) {
+
+        } else if (event.getActionCommand().equals(RESET)) {
             // Reset timer
             scoreTimer.stop();
             time = 0;
 
             // Reset minefield
-            if (difficultyBox.getSelectedIndex() == 0)
-            {
+            if (difficultyBox.getSelectedIndex() == 0) {
                 minePanel.setMinefield((new Minefield(9, 9, 10)));
-            }
-            else if (difficultyBox.getSelectedIndex() == 2)
-            {
+            } else if (difficultyBox.getSelectedIndex() == 2) {
                 minePanel.setMinefield((new Minefield(30, 16, 99)));
-            }
-            else if (difficultyBox.getSelectedIndex() == 1)
-            {
+            } else if (difficultyBox.getSelectedIndex() == 1) {
                 minePanel.setMinefield((new Minefield(16, 16, 40)));
             }
 
@@ -158,8 +204,11 @@ public class MinesweeperFrame extends JFrame implements ActionListener {
         topTimer.setText((time) + " Seconds   ");
     }
 
-    public static void main(String[] args)
-    {
+    /**
+     * Main-Methode.
+     * @param args
+     */
+    public static void main(final String[] args) {
 
         final Logger logger = Logger.getLogger(Minefield.class.getName());
 
@@ -169,7 +218,8 @@ public class MinesweeperFrame extends JFrame implements ActionListener {
 
         try {
 
-            final FileHandler fh = new FileHandler("C:/Users/Niklas/Desktop/java-minesweeper/log/loggy.html");
+            final FileHandler fh = new FileHandler(
+                    "C:/Users/Niklas/Desktop/java-minesweeper/log/loggy.html");
 
             fh.setFormatter(new HTMLFormatter());
 
@@ -194,8 +244,7 @@ public class MinesweeperFrame extends JFrame implements ActionListener {
         SwingUtilities.invokeLater(new Runnable()
         {
             @Override
-            public void run()
-            {
+            public void run() {
 
 
 

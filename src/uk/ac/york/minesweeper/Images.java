@@ -9,64 +9,68 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 /**
- * Static class containing the game's images
+ * Static class containing the game's images.
  */
 public final class Images {
 
-    private static final Logger LOGGER = Logger.getLogger(Images.class.getName());
+    /**
+     * Logger für Images.
+     */
+    private static final Logger
+    LOGGER = Logger.getLogger(Images.class.getName());
 
+    /**
+     * Der Handler für den Logger.
+     */
     private static final ConsoleHandler HANDLER = new ConsoleHandler();
 
-    /** Resources directory (beginning and ending with forward slash) */
+    /** Resources directory (beginning and ending with forward slash). */
     private static final String RES_DIRECTORY = "/res/";
 
-    /** Image of a sea mine */
+    /** Image of a sea mine. */
     public static final BufferedImage MINE = loadImageResource("mine.png");
 
-    /** Image of a generic flag */
+    /** Image of a generic flag. */
     public static final BufferedImage FLAG = loadImageResource("flag.png");
 
-    /** Image of a normal face */
-    public static final BufferedImage FACE_NORMAL = loadImageResource("default.png");
+    /** Image of a normal face. */
+    public static final BufferedImage
+    FACE_NORMAL = loadImageResource("default.png");
 
-    /** Image of a face when you win */
+    /** Image of a face when you win. */
     public static final BufferedImage FACE_WON = loadImageResource("won.png");
 
-    /** Image of a face when you lose */
+    /** Image of a face when you lose. */
     public static final BufferedImage FACE_LOST = loadImageResource("lost.png");
 
     /**
-     * Loads an image from the resources directory
+     * Loads an image from the resources directory.
      *
      * @param name image name
      * @return the loaded image
      */
-    private static BufferedImage loadImageResource(String name)
-    {
+    private static BufferedImage loadImageResource(final String name) {
 
 
-        try (InputStream imgStream = Images.class.getResourceAsStream(RES_DIRECTORY + name))
-        {
-          /*  HANDLER.setFormatter(new OwnFormatter());
-            LOG.addHandler(HANDLER);
+        try (InputStream imgStream =
+                Images.class.getResourceAsStream(RES_DIRECTORY + name)) {
+            HANDLER.setFormatter(new OwnFormatter());
+            LOGGER.addHandler(HANDLER);
 
-            LOG.info("LOG Gestartet!");
-
-            LOG.setLevel(Level.FINEST);
-            LOG.log(Level.FINE, "logging ALL");
-
-            LOG.info("Bild geladen!"); */
             // Decompress image
-            return ImageIO.read(imgStream) ;
+            return ImageIO.read(imgStream);
         }
-        catch (IOException e)
-        {
-            // Oh noes
+        catch (IOException e) {
+
+            LOGGER.severe("FEHLER BEIM LADEN DES BILDES.");
+
             throw new RuntimeException("Could not load image file: " + name, e);
         }
     }
 
-    private Images()
-    {
+    /**
+     * Images.
+     */
+    private Images() {
     }
 }
